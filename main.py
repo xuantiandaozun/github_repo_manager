@@ -10,11 +10,9 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QPushButton,
 from PyQt5.QtGui import QIcon
 from manager.RepoManager import RepoManager
 from manager.GithubApiManager import GithubApiManager
-from utils.AddListWidgetUtils import GithubApiManager
 from utils.AddListWidgetUtils import AddListWidgetUtils
 
-logging.basicConfig(filename='log.log', level=logging.DEBUG,filemode='w', encoding='utf-8')
-
+logging.basicConfig(filename='log.log', level=logging.DEBUG, filemode='w', encoding='utf-8')
 
 
 class MainWindow(QMainWindow):
@@ -34,13 +32,12 @@ class MainWindow(QMainWindow):
             QTableView { font-size: 16px; }
         ''')
         # 读取配置文件
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        self.username = config.get('github', 'username')
-        self.token = config.get('github', 'token')
+        self.config = configparser.ConfigParser()
+        self.config.read('config.ini')
+        self.username = self.config.get('github', 'username')
+        self.token = self.config.get('github', 'token')
 
         self.set_token()
- 
 
         # 设置界面组件
         self.create_repo_button = QPushButton('新建仓库', self)
@@ -61,7 +58,6 @@ class MainWindow(QMainWindow):
         self.listWidget = QListWidget(self)
         self.listWidget.setFrameShape(QFrame.NoFrame)
         self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-
 
         # 设置布局
         button_layout = QHBoxLayout()
@@ -90,7 +86,7 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-        self.repoManager=RepoManager(self)
+        self.repoManager = RepoManager(self)
 
         # 设置信号和槽
         self.create_repo_button.clicked.connect(lambda: asyncio.run(self.repoManager.create_repo()))
@@ -98,7 +94,7 @@ class MainWindow(QMainWindow):
         self.edit_repo_button.clicked.connect(lambda: asyncio.run(self.repoManager.edit_repo()))
         self.token_button.clicked.connect(self.set_token)
 
-        self.github_api_manager = GithubApiManager(self.username,self.token)
+        self.github_api_manager = GithubApiManager(self.username, self.token)
 
         # 加载仓库列表
         asyncio.run(self.repoManager.load_repos())
@@ -107,13 +103,11 @@ class MainWindow(QMainWindow):
         if not self.username:
             self.username, ok = QInputDialog.getText(self, '设置用户名', '请输入GitHub用户名')
             if ok:
-                config.set('github', 'username', self.username)
+                self.config.set('github', 'username', self.username)
         if not self.token:
             self.token, ok = QInputDialog.getText(self, '设置访问令牌', '请输入 GitHub 访问令牌')
             if ok:
-                config.set('github', 'token', self.token)
-
-
+                self.config.set('github', 'token', self.token)
 
     def search_repos(self):
         if not self.token:
@@ -124,28 +118,28 @@ class MainWindow(QMainWindow):
                 # 搜索内容为空就直接刷新页面
                 asyncio.run(self.repoManager.load_repos())
                 return
-            repos = asyncio.run( self.github_api_manager.load_repos());
+            repos = asyncio.run(self.github_api_manager.load_repos());
             filtered_repos = [];
             for repo in repos:
                 if self.searchBox.text().lower() in repo['name'].lower():
                     filtered_repos.append(repo)
-            repos=filtered_repos;
-            self.listWidget.clear()  
-            AddListWidgetUtils.add_repo_to_list_widget(self,repos);
+            repos = filtered_repos;
+            self.listWidget.clear()
+            AddListWidgetUtils.add_repo_to_list_widget(self, repos);
 
             return
         else:
             if not text:
                 QMessageBox.warning(self, '警告', '搜索github仓库，搜索内容不能为空')
                 return
-            repos = asyncio.run( self.github_api_manager.search_repos(text));
+            repos = asyncio.run(self.github_api_manager.search_repos(text));
             self.listWidget.clear()
-            AddListWidgetUtils.add_repo_to_list_widget(self,repos);
+            AddListWidgetUtils.add_repo_to_list_widget(self, repos);
             return
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())        
-       
+    sys.exit(app.exec_())
