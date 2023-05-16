@@ -19,6 +19,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+
+
         # 设置主窗口标题和图标
         self.setWindowTitle('GitHub 仓库管理器')
         self.setWindowIcon(QIcon('icon.png'))
