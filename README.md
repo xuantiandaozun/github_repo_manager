@@ -1,4 +1,4 @@
-# 🐍PyQt5 GitHub 仓库管理器
+# PyQt5 GitHub 仓库管理器
 
 本项目是一个使用 PyQt5 和 GitHub API 的仓库管理器，它提供了 GUI 界面，让用户可以方便地创建、删除和编辑 GitHub 仓库，还可以搜索自己的仓库或所有公共仓库。
 
@@ -14,6 +14,9 @@
 2. 克隆本仓库到本地。
 3. 配置 GitHub 用户名和访问令牌，可参考 `config.ini` 文件。
 4. 运行 `main.py` 文件。
+
+## 项目截图
+![img.png](img/img.png)
 
 ## 其他
 
